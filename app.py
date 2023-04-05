@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
 
 from flask import Flask, jsonify
+from flask_cors import CORS
 
 engine = create_engine("postgresql://postgres:postgres@localhost:5432/Project_3_db")
 
@@ -15,6 +16,7 @@ Base.prepare(autoload_with=engine)
 Commodities = Base.classes.commodity_prices
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/commodity_prices')
 def commodity_prices():
