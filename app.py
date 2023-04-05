@@ -3,7 +3,7 @@ import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
-
+import datetime
 from flask import Flask, jsonify
 from flask_cors import CORS
 
@@ -17,7 +17,6 @@ Commodities = Base.classes.commodity_prices
 
 app = Flask(__name__)
 CORS(app)
-
 @app.route('/commodity_prices')
 def commodity_prices():
     with engine.connect() as conn:
