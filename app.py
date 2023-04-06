@@ -17,10 +17,10 @@ Commodities = Base.classes.commodity_prices
 
 app = Flask(__name__)
 CORS(app)
-@app.route('/commodity_prices')
+@app.route('/financial_data')
 def commodity_prices():
     with engine.connect() as conn:
-        result = conn.execute('SELECT * From commodity_prices')
+        result = conn.execute("SELECT * FROM commodity_prices RIGHT JOIN expendature_by_commodity ON commodity_prices.date = expendature_by_commodity.date Where commodity_prices.date > '1988-08-01'")
         headers = result.keys()
         rows = result.fetchall()
         data = []
@@ -28,16 +28,16 @@ def commodity_prices():
             data.append(dict(zip(headers, row)))
         return jsonify(data)
 
-@app.route('/expendature')
-def expendature_by_commodity():
-    with engine.connect() as conn:
-        result = conn.execute('SELECT * From expendature_by_commodity')
-        headers = result.keys()
-        rows = result.fetchall()
-        data = []
-        for row in rows:
-            data.append(dict(zip(headers, row)))
-        return jsonify(data)
+# @app.route('/expendature')
+# def expendature_by_commodity():
+#     with engine.connect() as conn:
+#         result = conn.execute('SELECT * From expendature_by_commodity')
+#         headers = result.keys()
+#         rows = result.fetchall()
+#         data = []
+#         for row in rows:
+#             data.append(dict(zip(headers, row)))
+#         return jsonify(data)
 
 if __name__ == '__main__':
     app.run(debug=True)
