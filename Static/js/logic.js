@@ -22,26 +22,6 @@ d3.json(financial).then(function(financialData){
     let NSW_Fe_exp = [];
     let NSW_Cu_exp = [];
 
-    let expendatureStates = [
-        SA_Au_exp,
-        SA_Fe_exp,  
-        SA_Cu_exp,  
-        WA_Au_exp,  
-        WA_Fe_exp,  
-        WA_Cu_exp,  
-        VIC_Au_exp,  
-        VIC_Fe_exp,  
-        VIC_Cu_exp,  
-        NT_Au_exp,  
-        NT_Fe_exp,  
-        NT_Cu_exp,  
-        QLD_Au_exp,  
-        QLD_Fe_exp,  
-        QLD_Cu_exp,  
-        NSW_Au_exp,  
-        NSW_Fe_exp,  
-        NSW_Cu_exp
-    ];
     //let WA_all_exp = [];
 
     
@@ -145,6 +125,9 @@ d3.json(financial).then(function(financialData){
         let NT_Fe_value_ma = 0;
         let NT_Cu_value_ma = 0;
 
+        let Fe_pieChart = [];
+        let Au_pieChart = [];
+        let Cu_pieChart = [];
 
         //calc percent change in commodity prices
         if (Au_price !== null) {
@@ -382,11 +365,35 @@ d3.json(financial).then(function(financialData){
             commodity: Cu_price,
             commodity_pct_change: Cu_pct_change
         });
-    };
-    // add moving average to each object:
 
-    
-    console.log(WA_Au_exp);
+        // data for pie charts
+        Fe_pieChart.push({
+            WA_Fe_exp: WA_Fe_exp,
+            SA_Fe_exp: SA_Fe_exp,
+            VIC_Fe_exp: VIC_Fe_exp,
+            NT_Fe_exp: NT_Fe_exp,
+            QLD_Fe_exp: QLD_Fe_exp,
+            NSW_Fe_exp: NSW_Fe_exp
+        });
+        Cu_pieChart.push({
+            WA_Cu_exp: WA_Fe_exp,
+            SA_Cu_exp: SA_Fe_exp,
+            VIC_Cu_exp: VIC_Fe_exp,
+            NT_Cu_exp: NT_Fe_exp,
+            QLD_Cu_exp: QLD_Fe_exp,
+            NSW_Cu_exp: NSW_Fe_exp
+            });
+        Au_pieChart.push({
+            WA_Au_exp: WA_Fe_exp,
+            SA_Au_exp: SA_Fe_exp,
+            VIC_Au_exp: VIC_Fe_exp,
+            NT_Au_exp: NT_Fe_exp,
+            QLD_Au_exp: QLD_Fe_exp,
+            NSW_Au_exp: NSW_Fe_exp
+        });
+            
+    };
+
     // button interactivity
     const commodityButtons = document.querySelectorAll('.commodity');
     const stateButtons = document.querySelectorAll('.state');
@@ -404,7 +411,7 @@ d3.json(financial).then(function(financialData){
     selectedCommodity = button.dataset.commodity;
 
     // update chart
-    updateChart();
+    updateLineChart();
     }
 
     function stateButtonsClick(button) {
@@ -417,7 +424,7 @@ d3.json(financial).then(function(financialData){
     selectedState = button.dataset.state;
 
     // update chart
-    updateChart();
+    updateLineChart();
     }
 
     commodityButtons.forEach(button => {
@@ -432,148 +439,116 @@ d3.json(financial).then(function(financialData){
     });
     });
 
-    function updateChart() {
+    function updateLineChart() {
     // determine which button was clicked
-    const commodityName = selectedCommodity;
-    const stateName = selectedState;
-    
-    // determine which expenditure array to use
-    let expenditureArray;
-    switch (stateName) {
-        case 'WA':
-        switch (commodityName) {
-            case 'Fe':
-            expenditureArray = WA_Fe_exp;
+        const commodityName = selectedCommodity;
+        const stateName = selectedState;
+        
+        // determine which expenditure array to use
+        let expenditureArray;
+        switch (stateName) {
+            case 'WA':
+            switch (commodityName) {
+                case 'Fe':
+                expenditureArray = WA_Fe_exp;
+                break;
+                case 'Au':
+                expenditureArray = WA_Au_exp;
+                break;
+                case 'Cu':
+                expenditureArray = WA_Cu_exp;
+                break;
+            }
             break;
-            case 'Au':
-            expenditureArray = WA_Au_exp;
+            case 'SA':
+            switch (commodityName) {
+                case 'Fe':
+                expenditureArray = SA_Fe_exp;
+                break;
+                case 'Au':
+                expenditureArray = SA_Au_exp;
+                break;
+                case 'Cu':
+                expenditureArray = SA_Cu_exp;
+                break;
+            }
             break;
-            case 'Cu':
-            expenditureArray = WA_Cu_exp;
+            case 'VIC':
+            switch (commodityName) {
+                case 'Fe':
+                expenditureArray = VIC_Fe_exp;
+                break;
+                case 'Au':
+                expenditureArray = VIC_Au_exp;
+                break;
+                case 'Cu':
+                expenditureArray = VIC_Cu_exp;
+                break;
+            }
+            break;
+            case 'NT':
+            switch (commodityName) {
+                case 'Fe':
+                expenditureArray = NT_Fe_exp;
+                break;
+                case 'Au':
+                expenditureArray = NT_Au_exp;
+                break;
+                case 'Cu':
+                expenditureArray = NT_Cu_exp;
+                break;
+            }
+            break;
+            case 'QLD':
+            switch (commodityName) {
+                case 'Fe':
+                expenditureArray = QLD_Fe_exp;
+                break;
+                case 'Au':
+                expenditureArray = QLD_Au_exp;
+                break;
+                case 'Cu':
+                expenditureArray = QLD_Cu_exp;
+                break;
+            }
+            break;
+            case 'NSW':
+            switch (commodityName) {
+                case 'Fe':
+                expenditureArray = NSW_Fe_exp;
+                break;
+                case 'Au':
+                expenditureArray = NSW_Au_exp;
+                break;
+                case 'Cu':
+                expenditureArray = NSW_Cu_exp;
+                break;
+            }
             break;
         }
-        break;
-        case 'SA':
-        switch (commodityName) {
-            case 'Fe':
-            expenditureArray = SA_Fe_exp;
-            break;
-            case 'Au':
-            expenditureArray = SA_Au_exp;
-            break;
-            case 'Cu':
-            expenditureArray = SA_Cu_exp;
-            break;
-        }
-        break;
-        case 'VIC':
-        switch (commodityName) {
-            case 'Fe':
-            expenditureArray = VIC_Fe_exp;
-            break;
-            case 'Au':
-            expenditureArray = VIC_Au_exp;
-            break;
-            case 'Cu':
-            expenditureArray = VIC_Cu_exp;
-            break;
-        }
-        break;
-        case 'NT':
-        switch (commodityName) {
-            case 'Fe':
-            expenditureArray = NT_Fe_exp;
-            break;
-            case 'Au':
-            expenditureArray = NT_Au_exp;
-            break;
-            case 'Cu':
-            expenditureArray = NT_Cu_exp;
-            break;
-        }
-        break;
-        case 'QLD':
-        switch (commodityName) {
-            case 'Fe':
-            expenditureArray = QLD_Fe_exp;
-            break;
-            case 'Au':
-            expenditureArray = QLD_Au_exp;
-            break;
-            case 'Cu':
-            expenditureArray = QLD_Cu_exp;
-            break;
-        }
-        break;
-        case 'NSW':
-        switch (commodityName) {
-            case 'Fe':
-            expenditureArray = NSW_Fe_exp;
-            break;
-            case 'Au':
-            expenditureArray = NSW_Au_exp;
-            break;
-            case 'Cu':
-            expenditureArray = NSW_Cu_exp;
-            break;
-        }
-        break;
-    }
 
-    // run the code to create the chart using the selected expenditure array
-    createCharts(expenditureArray);
+    // run the code to create the line chart using the selected expenditure array
+        createLineChart(expenditureArray);
     }
     
-    // function to create the chart
-    function createCharts(expenditureArray) {
+    function createPieChart(Fe_pieChart, Au_pieChart, Cu_pieChart) {
         const chartDiv1 = document.querySelector('.chart1');
-        const chartDiv2 = document.querySelector('.chart2');
-        const chartDiv3 = document.querySelector('.chart3');
 
-        // remove any existing canvas elements from the chartDivs
         chartDiv1.querySelectorAll('canvas').forEach(canvas => {
             const chart = Chart.instances[canvas.id];
             if (chart) {
                 chart.destroy();
             }
             canvas.remove();
-        });
-        chartDiv2.querySelectorAll('canvas').forEach(canvas => {
-            const chart = Chart.instances[canvas.id];
-            if (chart) {
-                chart.destroy();
-            }
-            canvas.remove();
-        });
-        chartDiv3.querySelectorAll('canvas').forEach(canvas => {
-            const chart = Chart.instances[canvas.id];
-            if (chart) {
-                chart.destroy();
-            }
-            canvas.remove();
-        });
-
-        // format data to be used in plots
-        const dates = expenditureArray.map(obj => obj.date);
-        const values = expenditureArray.map(obj => obj.value_ma);
-        let commodities = expenditureArray.map(obj => obj.commodity);
-        commodities = commodities.map(Number);
-
-        // create new canvas elements for each chart
+        
         const valueCanvas1 = document.createElement('canvas');
         valueCanvas1.width = 800;
         valueCanvas1.height = 400;
         chartDiv1.appendChild(valueCanvas1);
+        });
 
-        const valueCanvas2 = document.createElement('canvas');
-        valueCanvas2.width = 800;
-        valueCanvas2.height = 400;
-        chartDiv2.appendChild(valueCanvas2);
-
-        const valueCanvas3 = document.createElement('canvas');
-        valueCanvas3.width = 800;
-        valueCanvas3.height = 400;
-        chartDiv3.appendChild(valueCanvas3);
+        // TODO set up data for pie chart
+        
 
         // data for chart 1
         const valueCtx1 = valueCanvas1.getContext('2d');
@@ -617,6 +592,53 @@ d3.json(financial).then(function(financialData){
                 }
             }
         }
+        // create chart 1
+        const chart1 = new Chart(valueCtx1, config1);
+    }
+    
+
+    // function to create line the chart
+    function createLineChart(expenditureArray) {
+        
+        const chartDiv2 = document.querySelector('.chart2');
+        const chartDiv3 = document.querySelector('.chart3');
+
+        // remove any existing canvas elements from the chartDivs
+        
+        chartDiv2.querySelectorAll('canvas').forEach(canvas => {
+            const chart = Chart.instances[canvas.id];
+            if (chart) {
+                chart.destroy();
+            }
+            canvas.remove();
+        });
+        chartDiv3.querySelectorAll('canvas').forEach(canvas => {
+            const chart = Chart.instances[canvas.id];
+            if (chart) {
+                chart.destroy();
+            }
+            canvas.remove();
+        });
+
+        // format data to be used in plots
+        const dates = expenditureArray.map(obj => obj.date);
+        const values = expenditureArray.map(obj => obj.value_ma);
+        let commodities = expenditureArray.map(obj => obj.commodity);
+        commodities = commodities.map(Number);
+
+        // create new canvas elements for each chart
+        
+
+        const valueCanvas2 = document.createElement('canvas');
+        valueCanvas2.width = 800;
+        valueCanvas2.height = 400;
+        chartDiv2.appendChild(valueCanvas2);
+
+        const valueCanvas3 = document.createElement('canvas');
+        valueCanvas3.width = 800;
+        valueCanvas3.height = 400;
+        chartDiv3.appendChild(valueCanvas3);
+
 
         // data for chart 2
         const valueCtx2 = valueCanvas2.getContext('2d');
@@ -704,8 +726,7 @@ d3.json(financial).then(function(financialData){
             }
         }
 
-        // create chart 1
-        const chart1 = new Chart(valueCtx1, config1);
+        
         // create chart 1
         const chart2 = new Chart(valueCtx2, config2);
         // create chart 3
