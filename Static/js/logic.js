@@ -336,49 +336,49 @@ d3.json(financial).then(function(financialData){
         });
         QLD_Au_exp.push({
             date: date,
-            value: VIC_Au,
-            value_pct_change: VIC_Au_pct_change,
-            value_ma: VIC_Au_value_ma,
+            value: QLD_Au,
+            value_pct_change: QLD_Au_pct_change,
+            value_ma: QLD_Au_value_ma,
             commodity: Au_price,
             commodity_pct_change: Au_pct_change
         });
         QLD_Fe_exp.push({
             date: date,
-            value: VIC_Fe,
-            value_pct_change: VIC_Fe_pct_change,
-            value_ma: VIC_Fe_value_ma,
+            value: QLD_Fe,
+            value_pct_change: QLD_Fe_pct_change,
+            value_ma:QLD_Fe_value_ma,
             commodity: Fe_price,
             commodity_pct_change: Fe_pct_change
         });
         QLD_Cu_exp.push({
             date: date,
-            value: VIC_Cu,
-            value_pct_change: VIC_Cu_pct_change,
-            value_ma: VIC_Cu_value_ma,
+            value: QLD_Cu,
+            value_pct_change: QLD_Cu_pct_change,
+            value_ma: QLD_Cu_value_ma,
             commodity: Cu_price,
             commodity_pct_change: Cu_pct_change
         });
         NSW_Au_exp.push({
             date: date,
-            value: NT_Au,
-            value_pct_change: NT_Au_pct_change,
-            value_ma: NT_Au_value_ma,
+            value: NSW_Au,
+            value_pct_change: NSW_Au_pct_change,
+            value_ma: NSW_Au_value_ma,
             commodity: Au_price,
             commodity_pct_change: Au_pct_change
         });
         NSW_Fe_exp.push({
             date: date,
-            value: NT_Fe,
-            value_pct_change: NT_Fe_pct_change,
-            value_ma: NT_Fe_value_ma,
+            value: NSW_Fe,
+            value_pct_change: NSW_Fe_pct_change,
+            value_ma: NSW_Fe_value_ma,
             commodity: Fe_price,
             commodity_pct_change: Fe_pct_change
         });
         NSW_Cu_exp.push({
             date: date,
-            value: NT_Cu,
-            value_pct_change: NT_Cu_pct_change,
-            value_ma: NT_Cu_value_ma,
+            value: NSW_Cu,
+            value_pct_change: NSW_Cu_pct_change,
+            value_ma: NSW_Cu_value_ma,
             commodity: Cu_price,
             commodity_pct_change: Cu_pct_change
         });
@@ -531,6 +531,20 @@ d3.json(financial).then(function(financialData){
         const chartDiv3 = document.querySelector('.chart3');
 
         // remove any existing canvas elements from the chartDivs
+        chartDiv1.querySelectorAll('canvas').forEach(canvas => {
+            const chart = Chart.instances[canvas.id];
+            if (chart) {
+                chart.destroy();
+            }
+            canvas.remove();
+        });
+        chartDiv2.querySelectorAll('canvas').forEach(canvas => {
+            const chart = Chart.instances[canvas.id];
+            if (chart) {
+                chart.destroy();
+            }
+            canvas.remove();
+        });
         chartDiv3.querySelectorAll('canvas').forEach(canvas => {
             const chart = Chart.instances[canvas.id];
             if (chart) {
@@ -538,38 +552,32 @@ d3.json(financial).then(function(financialData){
             }
             canvas.remove();
         });
-        
 
-
-
-
-
-        // create an array of dates, values, and commodity prices from the expenditure array
+        // format data to be used in plots
         const dates = expenditureArray.map(obj => obj.date);
         const values = expenditureArray.map(obj => obj.value_ma);
         let commodities = expenditureArray.map(obj => obj.commodity);
         commodities = commodities.map(Number);
-     
 
+        // create new canvas elements for each chart
+        const valueCanvas1 = document.createElement('canvas');
+        valueCanvas1.width = 800;
+        valueCanvas1.height = 400;
+        chartDiv1.appendChild(valueCanvas1);
 
+        const valueCanvas2 = document.createElement('canvas');
+        valueCanvas2.width = 800;
+        valueCanvas2.height = 400;
+        chartDiv2.appendChild(valueCanvas2);
 
-
-
-        // create new canvas elements for the chart
         const valueCanvas3 = document.createElement('canvas');
         valueCanvas3.width = 800;
         valueCanvas3.height = 400;
         chartDiv3.appendChild(valueCanvas3);
-        
 
-
-
-
-
-
-        // create data and axis labels to be used on chart
-        const valueCtx = valueCanvas3.getContext('2d');
-        const data = {
+        // data for chart 1
+        const valueCtx1 = valueCanvas1.getContext('2d');
+        const data1 = {
             labels: dates,
             datasets: [{
                 label: 'Expendature (AUD mil)',
@@ -590,16 +598,10 @@ d3.json(financial).then(function(financialData){
             }]
         };
 
-
-
-
-
-
-
-        // configure chart axis positions
-        const config = {
+        // configure for chart 1
+        const config1 = {
             type: 'line',
-            data,
+            data: data1,
             options: {
                 scales: {
                     value_y: {
@@ -616,15 +618,98 @@ d3.json(financial).then(function(financialData){
             }
         }
 
+        // data for chart 2
+        const valueCtx2 = valueCanvas2.getContext('2d');
+        const data2 = {
+            labels: dates,
+            datasets: [{
+                label: 'Expendature (AUD mil)',
+                data: values,
+                yAxisID: 'value_y',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderWidth: 2,
+                pointRadius: 0,
+            },{
+                label: 'Commodity',
+                data: commodities,
+                yAxisID: 'commodity_y',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderWidth: 2,
+                pointRadius: 0,
+            }]
+        };
 
+        // configure for chart 2
+        const config2 = {
+            type: 'line',
+            data: data2,
+            options: {
+                scales: {
+                    value_y: {
+                        beginAtZero: true,
+                        type: 'linear',
+                        position: 'left'
+                    },
+                    commodity_y: {
+                        beginAtZero: true,
+                        type: 'linear',
+                        position: 'right' 
+                    }
+                }
+            }
+        }
 
+        // data for chart 3
+        const valueCtx3 = valueCanvas3.getContext('2d');
+        const data3 = {
+            labels: dates,
+            datasets: [{
+                label: 'Expendature (AUD mil)',
+                data: values,
+                yAxisID: 'value_y',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderWidth: 2,
+                pointRadius: 2,
+            },{
+                label: 'Commodity',
+                data: commodities,
+                yAxisID: 'commodity_y',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderWidth: 2,
+                pointRadius: 2,
+            }]
+        };
 
+        // configure for chart 3
+        const config3 = {
+            type: 'line',
+            data: data3,
+            options: {
+                scales: {
+                    value_y: {
+                        beginAtZero: true,
+                        type: 'linear',
+                        position: 'left'
+                    },
+                    commodity_y: {
+                        beginAtZero: true,
+                        type: 'linear',
+                        position: 'right' 
+                    }
+                }
+            }
+        }
 
-        
+        // create chart 1
+        const chart1 = new Chart(valueCtx1, config1);
+        // create chart 1
+        const chart2 = new Chart(valueCtx2, config2);
         // create chart 3
-        const chart = new Chart(valueCtx, config);
+        const chart3 = new Chart(valueCtx3, config3);
     } 
-
-
 
 });
