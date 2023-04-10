@@ -1,6 +1,18 @@
 const financial = "http://127.0.0.1:5000/financial_data"
+let financialData;
 
-d3.json(financial).then(function(financialData){
+d3.json(financial).then(function(data){
+    financialData =  data;
+    filterDates();
+});
+
+function filterDates() {
+    let startDate = new Date(document.getElementById('startDate').value);
+    let endDate = new Date(document.getElementById('endDate').value);
+    let filteredData = financialData.filter(function(d) {
+        let date = new Date(d.date);
+        return date >= startDate && date <= endDate;
+      });
 
     // save financial data for WA by commodity and date
     let SA_Au_exp = [];
@@ -21,8 +33,6 @@ d3.json(financial).then(function(financialData){
     let NSW_Au_exp = [];
     let NSW_Fe_exp = [];
     let NSW_Cu_exp = [];
-
-    //let WA_all_exp = [];
 
     let Fe_pieChart = {
         WA_Fe_exp: 0,
@@ -48,52 +58,35 @@ d3.json(financial).then(function(financialData){
         QLD_Cu_exp: 0,
         NSW_Cu_exp: 0
     };
-    
-    let dates = [];
-    for (let i = 0; i < financialData.length; i++) {
-        let dateString = financialData[i].date;
-        let dateConvert = new Date(dateString);
-        let day = dateConvert.getDate();
-        let month = dateConvert.getMonth() + 1;
-        let year = dateConvert.getFullYear();
-        let paddedDay = day.toString().padStart(2, '0');
-        let paddedMonth = month.toString().padStart(2, '0');
-        let date = `${year}-${paddedMonth}-${paddedDay}`;
-        dates.push(date);
-    }
 
+    // Get data based on date filter range
     function getData(){
-        const startDate = new Date(document.getElementById('startDate').value);
-        const endDate = new Date(document.getElementById('endDate').value);
-        const startIndex = dates.indexOf(startDate.toISOString().substring(0, 10));
-        const endIndex = dates.indexOf(endDate.toISOString().substring(0, 10));
+        for (let i = 0; i < filteredData.length; i++){
+            let dateString = filteredData[i].date;
+            let SA_Au = i > 0 ? Number(filteredData[i].sa_gold) : null;
+            let SA_Fe = i > 0 ? Number(filteredData[i].sa_iron_ore) : null;
+            let SA_Cu = i > 0 ? Number(filteredData[i].sa_copper) : null;
+            let WA_Au = i > 0 ? Number(filteredData[i].wa_gold) : null;
+            let WA_Fe = i > 0 ? Number(filteredData[i].wa_iron_ore) : null;
+            let WA_Cu = i > 0 ? Number(filteredData[i].wa_copper) : null;
+            let VIC_Au = i > 0 ? Number(filteredData[i].vic_gold) : null;
+            let VIC_Fe = i > 0 ? Number(filteredData[i].vic_iron_ore) : null;
+            let VIC_Cu = i > 0 ? Number(filteredData[i].vic_copper) : null;
+            let NT_Au = i > 0 ? Number(filteredData[i].nt_gold) : null;
+            let NT_Fe = i > 0 ? Number(filteredData[i].nt_iron_ore) : null;
+            let NT_Cu = i > 0 ? Number(filteredData[i].nt_copper) : null;
+            let QLD_Au = i > 0 ? Number(filteredData[i].qld_gold) : null;
+            let QLD_Fe = i > 0 ? Number(filteredData[i].qld_iron_ore) : null;
+            let QLD_Cu = i > 0 ? Number(filteredData[i].qld_copper) : null;
+            let NSW_Au = i > 0 ? Number(filteredData[i].nsw_gold) : null;
+            let NSW_Fe = i > 0 ? Number(filteredData[i].nsw_iron_ore) : null;
+            let NSW_Cu = i > 0 ? Number(filteredData[i].nsw_copper) : null;
 
-        for (let i = startIndex; i < endIndex; i++){
-            let dateString = financialData[i].date;
-            let SA_Au = i > 0 ? Number(financialData[i].sa_gold) : null;
-            let SA_Fe = i > 0 ? Number(financialData[i].sa_iron_ore) : null;
-            let SA_Cu = i > 0 ? Number(financialData[i].sa_copper) : null;
-            let WA_Au = i > 0 ? Number(financialData[i].wa_gold) : null;
-            let WA_Fe = i > 0 ? Number(financialData[i].wa_iron_ore) : null;
-            let WA_Cu = i > 0 ? Number(financialData[i].wa_copper) : null;
-            let VIC_Au = i > 0 ? Number(financialData[i].vic_gold) : null;
-            let VIC_Fe = i > 0 ? Number(financialData[i].vic_iron_ore) : null;
-            let VIC_Cu = i > 0 ? Number(financialData[i].vic_copper) : null;
-            let NT_Au = i > 0 ? Number(financialData[i].nt_gold) : null;
-            let NT_Fe = i > 0 ? Number(financialData[i].nt_iron_ore) : null;
-            let NT_Cu = i > 0 ? Number(financialData[i].nt_copper) : null;
-            let QLD_Au = i > 0 ? Number(financialData[i].qld_gold) : null;
-            let QLD_Fe = i > 0 ? Number(financialData[i].qld_iron_ore) : null;
-            let QLD_Cu = i > 0 ? Number(financialData[i].qld_copper) : null;
-            let NSW_Au = i > 0 ? Number(financialData[i].nsw_gold) : null;
-            let NSW_Fe = i > 0 ? Number(financialData[i].nsw_iron_ore) : null;
-            let NSW_Cu = i > 0 ? Number(financialData[i].nsw_copper) : null;
+            let Au_price = Number(filteredData[i].au_usd_oz);
+            let Fe_price = Number(filteredData[i].fe_usd_tonne);
+            let Cu_price = Number(filteredData[i].cu_usd_pound);
 
-            let Au_price = Number(financialData[i].au_usd_oz);
-            let Fe_price = Number(financialData[i].fe_usd_tonne);
-            let Cu_price = Number(financialData[i].cu_usd_pound);
-
-        // Convert datestring to new format
+            // Convert datestring to new format
             let dateConvert = new Date(dateString);
             let day = dateConvert.getDate();
             let month = dateConvert.getMonth() + 1;
@@ -102,308 +95,96 @@ d3.json(financial).then(function(financialData){
             let paddedMonth = month.toString().padStart(2, '0');
             let date = `${paddedDay}/${paddedMonth}/${year}`;
 
-            // TODO create % change data.
-            let last_Au = i > 0 ? Number(financialData[i-1].au_usd_oz) : null;
-            let last_Fe = i > 0 ? Number(financialData[i-1].fe_usd_tonne) : null;
-            let last_Cu = i > 0 ? Number(financialData[i-1].cu_usd_pound) : null;
-
-            let lastSA_Au = i > 0 ? Number(financialData[i-1].sa_gold) : null;
-            let lastSA_Fe = i > 0 ? Number(financialData[i-1].sa_iron_ore) : null;
-            let lastSA_Cu = i > 0 ? Number(financialData[i-1].sa_copper) : null;
-            let lastWA_Au = i > 0 ? Number(financialData[i-1].wa_gold) : null;
-            let lastWA_Fe = i > 0 ? Number(financialData[i-1].wa_iron_ore) : null;
-            let lastWA_Cu = i > 0 ? Number(financialData[i-1].wa_copper) : null;
-            let lastVIC_Au = i > 0 ? Number(financialData[i-1].vic_gold) : null;
-            let lastVIC_Fe = i > 0 ? Number(financialData[i-1].vic_iron_ore) : null;
-            let lastVIC_Cu = i > 0 ? Number(financialData[i-1].vic_copper) : null;
-            let lastNT_Au = i > 0 ? Number(financialData[i-1].nt_gold) : null;
-            let lastNT_Fe = i > 0 ? Number(financialData[i-1].nt_iron_ore) : null;
-            let lastNT_Cu = i > 0 ? Number(financialData[i-1].nt_copper) : null;
-            let lastQLD_Au = i > 0 ? Number(financialData[i-1].qld_gold) : null;
-            let lastQLD_Fe = i > 0 ? Number(financialData[i-1].qld_iron_ore) : null;
-            let lastQLD_Cu = i > 0 ? Number(financialData[i-1].qld_copper) : null;
-            let lastNSW_Au = i > 0 ? Number(financialData[i-1].nsw_gold) : null;
-            let lastNSW_Fe = i > 0 ? Number(financialData[i-1].nsw_iron_ore) : null;
-            let lastNSW_Cu = i > 0 ? Number(financialData[i-1].nsw_copper) : null;
-
-            let Au_pct_change = 0;
-            let Fe_pct_change = 0;
-            let Cu_pct_change = 0;
-
-            let SA_Au_pct_change = 0;
-            let SA_Fe_pct_change = 0;
-            let SA_Cu_pct_change = 0;
-            let WA_Au_pct_change = 0;
-            let WA_Fe_pct_change = 0;
-            let WA_Cu_pct_change = 0;
-            let VIC_Au_pct_change = 0;
-            let VIC_Fe_pct_change = 0;
-            let VIC_Cu_pct_change = 0;
-            let NT_Au_pct_change = 0;
-            let NT_Fe_pct_change = 0;
-            let NT_Cu_pct_change = 0;
-            let QLD_Au_pct_change = 0;
-            let QLD_Fe_pct_change = 0;
-            let QLD_Cu_pct_change = 0;
-            let NSW_Au_pct_change = 0;
-            let NSW_Fe_pct_change = 0;
-            let NSW_Cu_pct_change = 0;
-
-            let SA_Au_value_ma = 0;
-            let SA_Fe_value_ma = 0;
-            let SA_Cu_value_ma = 0;
-            let NSW_Au_value_ma = 0;
-            let NSW_Fe_value_ma = 0;
-            let NSW_Cu_value_ma = 0;
-            let VIC_Au_value_ma = 0;
-            let VIC_Fe_value_ma = 0;
-            let VIC_Cu_value_ma = 0;
-            let QLD_Au_value_ma = 0;
-            let QLD_Fe_value_ma = 0;
-            let QLD_Cu_value_ma = 0;
-            let WA_Au_value_ma = 0;
-            let WA_Fe_value_ma = 0;
-            let WA_Cu_value_ma = 0;
-            let NT_Au_value_ma = 0;
-            let NT_Fe_value_ma = 0;
-            let NT_Cu_value_ma = 0;
-
-            
-            //calc percent change in commodity prices
-            if (Au_price !== null) {
-                Au_pct_change = last_Au !== null ? ((Au_price - last_Au) / last_Au) * 100 : 0;
-            }
-            if (Fe_price !== null) {
-                Fe_pct_change = last_Fe !== null ? ((Fe_price - last_Fe) / last_Fe) * 100 : 0;
-            }
-            if (Cu_price !== null) {
-                Cu_pct_change = last_Cu !== null ? ((Cu_price - last_Cu) / last_Cu) * 100 : 0;
-            }
-
-            if (SA_Au !== null) {
-                SA_Au_pct_change = lastSA_Au !== null ? ((SA_Au - lastSA_Au) / lastSA_Au) * 100 : 0;
-                SA_Au_value_ma = lastSA_Au !== null ? (SA_Au + lastSA_Au) / 2 : 0;
-            }
-            if (SA_Fe !== null) {
-                SA_Fe_pct_change = lastSA_Fe !== null ? ((SA_Fe - lastSA_Fe) / lastSA_Fe) * 100 : 0;
-                SA_Fe_value_ma = lastSA_Fe !== null ? (SA_Fe + lastSA_Fe) / 2 : 0;
-            }
-            if (SA_Cu !== null) {
-                SA_Cu_pct_change = lastSA_Cu !== null ? ((SA_Cu - lastSA_Cu) / lastSA_Cu) * 100 : 0;
-                SA_Cu_value_ma = lastSA_Cu !== null ? (SA_Cu + lastSA_Cu) / 2 : 0;
-            }
-
-            if (NSW_Au !== null) {
-                NSW_Au_pct_change = lastNSW_Au !== null ? ((NSW_Au - lastNSW_Au) / lastNSW_Au) * 100 : 0;
-                NSW_Au_value_ma = lastNSW_Au !== null ? (NSW_Au + lastNSW_Au) / 2 : 0;
-            }
-            if (NSW_Fe !== null) {
-                NSW_Fe_pct_change = lastNSW_Fe !== null ? ((NSW_Fe - lastNSW_Fe) / lastNSW_Fe) * 100 : 0;
-                NSW_Fe_value_ma = lastNSW_Fe !== null ? (NSW_Fe + lastNSW_Fe) / 2 : 0;
-            }
-            if (NSW_Cu !== null) {
-                NSW_Cu_pct_change = lastNSW_Cu !== null ? ((NSW_Cu - lastNSW_Cu) / lastNSW_Cu) * 100 : 0;
-                NSW_Cu_value_ma = lastNSW_Cu !== null ? (NSW_Cu + lastNSW_Cu) / 2 : 0;
-            }
-        
-            if (VIC_Au !== null) {
-                VIC_Au_pct_change = lastVIC_Au !== null ? ((VIC_Au - lastVIC_Au) / lastVIC_Au) * 100 : 0;
-                VIC_Au_value_ma = lastVIC_Au !== null ? (VIC_Au + lastVIC_Au) / 2 : 0;
-            }
-            if (VIC_Fe !== null) {
-                VIC_Fe_pct_change = lastVIC_Fe !== null ? ((VIC_Fe - lastVIC_Fe) / lastVIC_Fe) * 100 : 0;
-                VIC_Fe_value_ma = lastVIC_Fe !== null ? (VIC_Fe + lastVIC_Fe) / 2 : 0;
-            }
-            if (VIC_Cu !== null) {
-                VIC_Cu_pct_change = lastVIC_Cu !== null ? ((VIC_Cu - lastVIC_Cu) / lastVIC_Cu) * 100 : 0;
-                VIC_Cu_value_ma = lastVIC_Cu !== null ? (VIC_Cu + lastVIC_Cu) / 2 : 0;
-            }
-
-            if (QLD_Au !== null) {
-                QLD_Au_pct_change = lastQLD_Au !== null ? ((QLD_Au - lastQLD_Au) / lastQLD_Au) * 100 : 0;
-                QLD_Au_value_ma = lastQLD_Au !== null ? (QLD_Au + lastQLD_Au) / 2 : 0;
-            }
-            if (QLD_Fe !== null) {
-                QLD_Fe_pct_change = lastQLD_Fe !== null ? ((QLD_Fe - lastQLD_Fe) / lastQLD_Fe) * 100 : 0;
-                QLD_Fe_value_ma = lastQLD_Fe !== null ? (QLD_Fe + lastQLD_Fe) / 2 : 0;
-            }
-            if (QLD_Cu !== null) {
-                QLD_Cu_pct_change = lastQLD_Cu !== null ? ((QLD_Cu - lastQLD_Cu) / lastQLD_Cu) * 100 : 0;
-                QLD_Cu_value_ma = lastQLD_Cu !== null ? (QLD_Cu + lastQLD_Cu) / 2 : 0;
-            }
-            
-            if (WA_Au !== null) {
-                WA_Au_pct_change = lastWA_Au !== null ? ((WA_Au - lastWA_Au) / lastWA_Au) * 100 : 0;
-                WA_Au_value_ma = lastWA_Au !== null ? (WA_Au + lastWA_Au) / 2 : 0;
-            }
-            if (WA_Fe !== null) {
-                WA_Fe_pct_change = lastWA_Fe !== null ? ((WA_Fe - lastWA_Fe) / lastWA_Fe) * 100 : 0;
-                WA_Fe_value_ma = lastWA_Fe !== null ? (WA_Fe + lastWA_Fe) / 2 : 0;
-            }
-            if (WA_Cu !== null) {
-                WA_Cu_pct_change = lastWA_Cu !== null ? ((WA_Cu - lastWA_Cu) / lastWA_Cu) * 100 : 0;
-                WA_Cu_value_ma = lastWA_Cu !== null ? (WA_Cu + lastWA_Cu) / 2 : 0;
-            }
-
-            if (NT_Au !== null) {
-                NT_Au_pct_change = lastNT_Au !== null ? ((NT_Au - lastNT_Au) / lastNT_Au) * 100 : 0;
-                NT_Au_value_ma = lastNT_Au !== null ? (NT_Au + lastNT_Au) / 2 : 0;
-            }
-            if (NT_Fe !== null) {
-                NT_Fe_pct_change = lastNT_Fe !== null ? ((NT_Fe - lastNT_Fe) / lastNT_Fe) * 100 : 0;
-                NT_Fe_value_ma = lastNT_Fe !== null ? (NT_Fe + lastNT_Fe) / 2 : 0;
-            }
-            if (NT_Cu !== null) {
-                NT_Cu_pct_change = lastNT_Cu !== null ? ((NT_Cu - lastNT_Cu) / lastNT_Cu) * 100 : 0;
-                NT_Cu_value_ma = lastNT_Cu !== null ? (NT_Cu + lastNT_Cu) / 2 : 0;
-            }
-
-            // calculate % change difference between commodity vs expendature.
-
             // Push results to variables
             SA_Au_exp.push({
                 date: date,
                 value: SA_Au,
-                value_pct_change: SA_Au_pct_change,
-                value_ma: SA_Au_value_ma,
-                commodity: Au_price,
-                commodity_pct_change: Au_pct_change
+                commodity: Au_price
             });
             SA_Fe_exp.push({
                 date: date,
                 value: SA_Fe,
-                value_pct_change: SA_Fe_pct_change,
-                value_ma: SA_Fe_value_ma,
-                commodity: Fe_price,
-                commodity_pct_change: Fe_pct_change
+                commodity: Fe_price
             });
             SA_Cu_exp.push({
                 date: date,
                 value: SA_Cu,
-                value_pct_change: SA_Cu_pct_change,
-                value_ma: SA_Cu_value_ma,
-                commodity: Cu_price,
-                commodity_pct_change: Cu_pct_change
+                commodity: Cu_price
             });
             WA_Au_exp.push({
                 date: date,
                 value: WA_Au,
-                value_pct_change: WA_Au_pct_change,
-                value_ma: WA_Au_value_ma,
-                commodity: Au_price,
-                commodity_pct_change: Au_pct_change
+                commodity: Au_price
             });
             WA_Fe_exp.push({
                 date: date,
                 value: WA_Fe,
-                value_pct_change: WA_Fe_pct_change,
-                value_ma: WA_Fe_value_ma,
-                commodity: Fe_price,
-                commodity_pct_change: Fe_pct_change
+                commodity: Fe_price
             });
             WA_Cu_exp.push({
                 date: date,
                 value: WA_Cu,
-                value_pct_change: WA_Cu_pct_change,
-                value_ma: WA_Cu_value_ma,
-                commodity: Cu_price,
-                commodity_pct_change: Cu_pct_change
+                commodity: Cu_price
             });
             VIC_Au_exp.push({
                 date: date,
                 value: VIC_Au,
-                value_pct_change: VIC_Au_pct_change,
-                value_ma: VIC_Au_value_ma,
-                commodity: Au_price,
-                commodity_pct_change: Au_pct_change
+                commodity: Au_price
             });
             VIC_Fe_exp.push({
                 date: date,
                 value: VIC_Fe,
-                value_pct_change: VIC_Fe_pct_change,
-                value_ma: VIC_Fe_value_ma,
-                commodity: Fe_price,
-                commodity_pct_change: Fe_pct_change
+                commodity: Fe_price
             });
             VIC_Cu_exp.push({
                 date: date,
                 value: VIC_Cu,
-                value_pct_change: VIC_Cu_pct_change,
-                value_ma: VIC_Cu_value_ma,
                 commodity: Cu_price,
-                commodity_pct_change: Cu_pct_change
             });
             NT_Au_exp.push({
                 date: date,
                 value: NT_Au,
-                value_pct_change: NT_Au_pct_change,
-                value_ma: NT_Au_value_ma,
-                commodity: Au_price,
-                commodity_pct_change: Au_pct_change
+                commodity: Au_price
             });
             NT_Fe_exp.push({
                 date: date,
                 value: NT_Fe,
-                value_pct_change: NT_Fe_pct_change,
-                value_ma: NT_Fe_value_ma,
-                commodity: Fe_price,
-                commodity_pct_change: Fe_pct_change
+                commodity: Fe_price
             });
             NT_Cu_exp.push({
                 date: date,
                 value: NT_Cu,
-                value_pct_change: NT_Cu_pct_change,
-                value_ma: NT_Cu_value_ma,
-                commodity: Cu_price,
-                commodity_pct_change: Cu_pct_change
+                commodity: Cu_price
             });
             QLD_Au_exp.push({
                 date: date,
                 value: QLD_Au,
-                value_pct_change: QLD_Au_pct_change,
-                value_ma: QLD_Au_value_ma,
-                commodity: Au_price,
-                commodity_pct_change: Au_pct_change
+                commodity: Au_price
             });
             QLD_Fe_exp.push({
                 date: date,
                 value: QLD_Fe,
-                value_pct_change: QLD_Fe_pct_change,
-                value_ma:QLD_Fe_value_ma,
-                commodity: Fe_price,
-                commodity_pct_change: Fe_pct_change
+                commodity: Fe_price
             });
             QLD_Cu_exp.push({
                 date: date,
                 value: QLD_Cu,
-                value_pct_change: QLD_Cu_pct_change,
-                value_ma: QLD_Cu_value_ma,
-                commodity: Cu_price,
-                commodity_pct_change: Cu_pct_change
+                commodity: Cu_price
             });
             NSW_Au_exp.push({
                 date: date,
                 value: NSW_Au,
-                value_pct_change: NSW_Au_pct_change,
-                value_ma: NSW_Au_value_ma,
-                commodity: Au_price,
-                commodity_pct_change: Au_pct_change
+                commodity: Au_price
             });
             NSW_Fe_exp.push({
                 date: date,
                 value: NSW_Fe,
-                value_pct_change: NSW_Fe_pct_change,
-                value_ma: NSW_Fe_value_ma,
-                commodity: Fe_price,
-                commodity_pct_change: Fe_pct_change
+                commodity: Fe_price
             });
             NSW_Cu_exp.push({
                 date: date,
                 value: NSW_Cu,
-                value_pct_change: NSW_Cu_pct_change,
-                value_ma: NSW_Cu_value_ma,
-                commodity: Cu_price,
-                commodity_pct_change: Cu_pct_change
+                commodity: Cu_price
             });
 
             // data for pie charts
@@ -426,23 +207,61 @@ d3.json(financial).then(function(financialData){
             Cu_pieChart[`VIC_Cu_exp`] += VIC_Cu;
             Cu_pieChart[`NT_Cu_exp`] += NT_Cu;
             Cu_pieChart[`QLD_Cu_exp`] += QLD_Cu;
-            Cu_pieChart[`NSW_Cu_exp`] += NSW_Cu;
-                
+            Cu_pieChart[`NSW_Cu_exp`] += NSW_Cu;   
         }
         updateLineChart();
-        updateNormalisedChart;
+        updateNormalisedChart();
         updatePieChart();
     }
-    
-    // button interactivity
+
+    // functions to calculate a 4point SMA Array
+    function simpleMovingAverage(value, window = 4, n = Infinity) {
+        if (!value || value.length < window) {
+          return [];
+        }
+        let index = window - 1;
+        const length = value.length + 1;
+        const simpleMovingAverages = [];
+        let numberOfSMAsCalculated = 0;
+        while (++index < length && numberOfSMAsCalculated++ < n) {
+          const windowSlice = value.slice(index - window, index);
+          const sum = windowSlice.reduce((prev, curr) => prev + curr, 0);
+          simpleMovingAverages.push(sum / window);
+        }
+        return simpleMovingAverages;
+    }
+      // run calculate EMA when needed (this function also uses simpleMovingAverage())
+    function exponentialMovingAverage(values, window = 4) {
+        if (!values || values.length < window) {
+          return [];
+        }
+        let index = window - 1;
+        let previousEmaIndex = 0;
+        const length = values.length;
+        const smoothingFactor = 2 / (window + 1);
+        const exponentialMovingAverages = [];
+        const [sma] = simpleMovingAverage(values, window, 1);
+        exponentialMovingAverages.push(sma);
+        while (++index < length) {
+          const value = values[index];
+          const previousEma = exponentialMovingAverages[previousEmaIndex++];
+          const currentEma = (value - previousEma) * smoothingFactor + previousEma;
+          exponentialMovingAverages.push(currentEma);
+        }
+        return exponentialMovingAverages;
+    }
+
+    // Button interactivity
     const commodityButtons = document.querySelectorAll('.commodity');
     const stateButtons = document.querySelectorAll('.state');
 
     let selectedCommodity = 'Fe';
     let selectedState = 'WA';
-
+    
+    // Draw charts
     getData();
 
+    // Determine which buttons are active
     function commodityButtonsClick(button) {
         commodityButtons.forEach(b => b.classList.remove('active'));
         button.classList.add('active');
@@ -472,10 +291,11 @@ d3.json(financial).then(function(financialData){
     });
     });
 
+    // Update pie chart based on which commodity is selected
     function updatePieChart(){
         let commodityName = selectedCommodity;
-  
         let pieArray;
+
         switch (commodityName) {
             case 'Fe':
             pieArray = Fe_pieChart;
@@ -493,35 +313,51 @@ d3.json(financial).then(function(financialData){
     function createPieChart(pieArray) {
         const chartDiv1 = document.querySelector('.chart1');
 
-    chartDiv1.querySelectorAll('canvas').forEach(canvas => {
-        if (canvas.closest('.chart1') === chartDiv1) {
-            const chart = Chart.instances[canvas.id];
-            if (chart) {
-                chart.destroy();
+        chartDiv1.querySelectorAll('canvas').forEach(canvas => {
+            if (canvas.closest('.chart1') === chartDiv1) {
+                const chart = Chart.instances[canvas.id];
+                if (chart) {
+                    chart.destroy();
+                }
+                canvas.remove();
             }
-            canvas.remove();
-        }
-    });
+        });
     
         // Set up data for pie chart
         const data1 = {
             datasets: [{
-                data: Object.values(pieArray)
+                data: Object.values(pieArray),
+                label: 'expenditure millions',
+                hoverOffset: 7
             }],
     
-            labels: Object.keys(pieArray)
+            labels: [
+                `WA ${selectedCommodity} expenditure`,
+                `SA ${selectedCommodity} expenditure`,
+                `VIC ${selectedCommodity} expenditure`,
+                `NT ${selectedCommodity} expenditure`,
+                `QLD ${selectedCommodity} expenditure`,
+                `NSW ${selectedCommodity} expenditure`
+            ]
         };
     
-        // Configure chart
+        // Configure doughnut chart
         const config1 = {
             type: 'doughnut',
             data: data1,
             options: {
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'left'
+                    }
+                },
                 responsive: true,
                 maintainAspectRatio: false
             }
         }
 
+        // set up canvas for chart 1
         const valueCanvas1 = document.createElement('canvas');
         valueCanvas1.width = 800;
         valueCanvas1.height = 400;
@@ -530,11 +366,12 @@ d3.json(financial).then(function(financialData){
         const chart = new Chart(ctx, config1);
     }
 
+    // set up chart 2
     function updateNormalisedChart() {
         const commodityName = selectedCommodity;
         const stateName = selectedState;
         
-        // determine which expenditure array to use
+        // determine which expenditure array to use based on active buttons (combination of commodity and State)
         let diffArray;
         switch (stateName) {
             case 'WA':
@@ -616,74 +453,78 @@ d3.json(financial).then(function(financialData){
             }
             break;
         }
-        
         createNormalisedChart(diffArray);
     }
 
     function createNormalisedChart(diffArray){
         const chartDiv2 = document.querySelector('.chart2');
         // format data for plot
-        // assuming your object is called diffArray and the two data series are stored as arrays in properties value_pct_change and.commodity_pct_change
-        const xData = diffArray.map(data => data.value === null ? 0 : data.value);
-        const yData = diffArray.map(data => data.commodity === null ? 0 : data.commodity);
+        // filter out objects with null values
+        const filteredData = diffArray.filter(obj => obj.value !== null && obj.commodity !== null);
+        const filteredDates = filteredData.map(obj => obj.date);
+        
+        // extract the value and commodity data
+        const xData = filteredData.map(data => data.value);
+        const yData = filteredData.map(data => data.commodity);
+        
+        // get moving averages of data Arrays
+        const xDataMA = exponentialMovingAverage(xData);
+        const yDataMA = exponentialMovingAverage(yData);
 
-        // calculate the mean and standard deviation of the  data
-        const xMean = xData.reduce((a, b) => a + b) / xData.length;
-        const yMean = yData.reduce((a, b) => a + b) / yData.length;
-
-        const xStdDev = Math.sqrt(xData.reduce((sq, n) => sq + Math.pow(n - xMean, 2), 0) / (xData.length - 1));
-        const yStdDev = Math.sqrt(yData.reduce((sq, n) => sq + Math.pow(n - yMean, 2), 0) / (yData.length - 1));
-
-        // normalize the  data 
-        const normalizedXData = xData.map(x => x / xStdDev);
-        const normalizedYData = yData.map(y => y / yStdDev);
-
+        // calculate the mean and standard deviation of the data
+        const xMean = xDataMA.reduce((a, b) => a + b) / xDataMA.length;
+        const yMean = yDataMA.reduce((a, b) => a + b) / yDataMA.length;
+    
+        const xStdDev = Math.sqrt(xDataMA.reduce((sq, n) => sq + Math.pow(n - xMean, 2), 0) / (xDataMA.length - 1));
+        const yStdDev = Math.sqrt(yDataMA.reduce((sq, n) => sq + Math.pow(n - yMean, 2), 0) / (yDataMA.length - 1));
+    
+        // normalize the data 
+        const normalizedXData = xDataMA.map(x => x / xStdDev).map(x => x === 0 ? null : x);
+        const normalizedYData = yDataMA.map(y => y / yStdDev).map(y => y === 0 ? null : y);
+    
         // push normalized data to a new variable in the same object
         diffArray.normalizedExpenditure = normalizedXData;
         diffArray.normalizedCommodity = normalizedYData;
-        
+    
         // calculate normalized difference
         let normalizedDifference = normalizedXData.map((x, i) => x - normalizedYData[i]);
-        
+    
         chartDiv2.querySelectorAll('canvas').forEach(canvas => {
             if (canvas.closest('.chart2') === chartDiv2) {
                 const chart = Chart.instances[canvas.id];
                 if (chart) {
                     chart.destroy();
                 }
-            canvas.remove();
+                canvas.remove();
             }  
         });
-
+    
         // create new canvas elements for chart 2
         const valueCanvas2 = document.createElement('canvas');
         valueCanvas2.width = 800;
         valueCanvas2.height = 400;
         chartDiv2.appendChild(valueCanvas2);
-
+    
         // data for chart 2
         const valueCtx2 = valueCanvas2.getContext('2d');
         const data2 = {
-            labels: dates,
+            labels: filteredDates,
             datasets: [{
-                label: 'Expendature (AUD mil)',
-                data: values,
+                label: 'Normalised Difference (Expenditure (4MA) - Commodity price)',
+                data: normalizedDifference,
                 yAxisID: 'value_y',
                 borderColor: 'rgba(255, 99, 132, 1)',
                 backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderWidth: 2,
-                pointRadius: 0,
-            },{
-                label: 'Commodity',
-                data: commodities,
-                yAxisID: 'commodity_y',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                fill: {
+                    target: 'origin',
+                    above: 'rgb(0, 255, 0, 0.2)',
+                    below: 'rgb(255, 0, 0, 0.2)'
+                },
                 borderWidth: 2,
                 pointRadius: 0,
             }]
         };
-
+    
         // configure for chart 2
         const config2 = {
             type: 'line',
@@ -694,11 +535,6 @@ d3.json(financial).then(function(financialData){
                         beginAtZero: true,
                         type: 'linear',
                         position: 'left'
-                    },
-                    commodity_y: {
-                        beginAtZero: true,
-                        type: 'linear',
-                        position: 'right' 
                     }
                 }
             }
@@ -706,10 +542,6 @@ d3.json(financial).then(function(financialData){
         // create chart 2
         const chart2 = new Chart(valueCtx2, config2);
     }
-    
-
-
-
 
     function updateLineChart() {
     // determine which button was clicked
@@ -800,9 +632,6 @@ d3.json(financial).then(function(financialData){
         }
         createLineChart(expenditureArray);
     }
-    
-    
-    
 
     // function to create line the chart
     function createLineChart(expenditureArray) {
@@ -822,8 +651,22 @@ d3.json(financial).then(function(financialData){
 
         // format data to be used in plots
         const dates = expenditureArray.map(obj => obj.date);
-        const values = expenditureArray.map(obj => obj.value_ma);
+        const values = expenditureArray.map(obj => obj.value);
         let commodities = expenditureArray.map(obj => obj.commodity);
+        
+        let values4EMA = exponentialMovingAverage(values);
+        // determine price units for selected commodity
+        let commodityUnits;
+
+        if (selectedCommodity === 'Fe') {
+            commodityUnits = 'USD/tonne';
+        } else if (selectedCommodity === 'Cu') {
+            commodityUnits = 'USD/lb';
+        } else if (selectedCommodity === 'Au') {
+            commodityUnits = 'USD/oz';
+        } else {
+            commodityUnits = 'Unknown commodity';
+        }
 
         const valueCanvas3 = document.createElement('canvas');
         valueCanvas3.width = 800;
@@ -835,21 +678,29 @@ d3.json(financial).then(function(financialData){
         const data3 = {
             labels: dates,
             datasets: [{
-                label: 'Expendature (AUD mil)',
+                label: 'Expenditure (AUD mil)',
                 data: values,
                 yAxisID: 'value_y',
                 borderColor: 'rgba(255, 99, 132, 1)',
                 backgroundColor: 'rgba(255, 99, 132, 0.2)',
                 borderWidth: 2,
-                pointRadius: 2,
+                pointRadius: 2
             },{
-                label: 'Commodity',
+                label: `Commodity price ${commodityUnits}`,
                 data: commodities,
                 yAxisID: 'commodity_y',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderWidth: 2,
-                pointRadius: 2,
+                pointRadius: 2
+            },{
+                label: 'Expenditure 4pt MA',
+                data: values4EMA,
+                yAxisID: 'value_y',
+                borderColor: 'rgba(0, 0, 255, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderWidth: 2,
+                pointRadius: 0
             }]
         };
 
@@ -862,18 +713,24 @@ d3.json(financial).then(function(financialData){
                     value_y: {
                         beginAtZero: true,
                         type: 'linear',
-                        position: 'left'
+                        position: 'left',
                     },
                     commodity_y: {
                         beginAtZero: true,
                         type: 'linear',
                         position: 'right' 
+                    },
+                    value_4MA: {
+                        beginAtZero: true,
+                        type: 'linear',
+                        position: 'left',
+                        display: false 
                     }
                 }
             }
         }
-
+        
         // create chart 3
         const chart3 = new Chart(valueCtx3, config3);
     } 
-});
+}
