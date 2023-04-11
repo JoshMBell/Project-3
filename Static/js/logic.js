@@ -5,14 +5,14 @@ d3.json(financial).then(function(data){
     financialData =  data;
     filterDates();
 });
-
+ 
 function filterDates() {
     let startDate = new Date(document.getElementById('startDate').value);
     let endDate = new Date(document.getElementById('endDate').value);
     let filteredData = financialData.filter(function(d) {
         let date = new Date(d.date);
         return date >= startDate && date <= endDate;
-      });
+    });
 
     // save financial data for WA by commodity and date
     let SA_Au_exp = [];
@@ -495,7 +495,7 @@ function filterDates() {
                 canvas.remove();
             }  
         });
-        
+
         chartDiv2.querySelectorAll('p').forEach(canvas => {
             if (canvas.closest('.chart2') === chartDiv2) {
                 const chart = Chart.instances[canvas.id];
@@ -560,16 +560,23 @@ function filterDates() {
                 scales: {
                     x: {
                         type: 'linear',
-                        position: 'bottom'
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Normalized Expenditure'
+                        }
                     },
                     y: {
                         type: 'linear',
-                        position: 'left'
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Normalized Commodity Price'
+                        }
                     }
                 }
             }
         };
- 
         const chart2 = new Chart(valueCtx2, config2);
     }
 
