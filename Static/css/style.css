@@ -36,6 +36,8 @@ aside {
   left: 0;
   padding: 20px;
   box-shadow: 2px 0px 4px rgba(0, 0, 0, 0.2);
+  font-size: 14px; 
+  text-align: center;
 }
 
 .buttons {
@@ -76,7 +78,6 @@ main {
   background-color: #2e2e2e;
 }
 
-
 .chart {
   background-color: #281e42a1;
   border-radius: 5px;
@@ -85,4 +86,11 @@ main {
   height: 400px;
 }
 
-
+.chart2 {
+  background-color: #281e42a1;
+  border-radius: 5px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  height: 420px;
+  color: white;
+}

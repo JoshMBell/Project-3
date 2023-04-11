@@ -8,18 +8,21 @@
 </head>
 <body>
 
-    <aside>
+  <aside>
+    <div> 
+      <h1> Date Filter</h1>
+      <input onchange="filterDates()" id="startDate" type="date" value= "1988-09-01">
+      <input onchange="filterDates()" id="endDate" type="date" value="2022-12-01">
+    </div>
     <div class="buttons">
       <h1>Choose a commodity</h1>
       <br>
-      <button class="commodity" data-commodity="Fe">Fe</button>
+      <button class="commodity active" data-commodity="Fe">Fe</button>
       <button class="commodity" data-commodity="Au">Au</button>
       <button class="commodity" data-commodity="Cu">Cu</button>
       <br>
-      <br>
-      <br>
       <h1>Choose a state</h1>
-      <button class="state" data-state="WA">WA</button>
+      <button class="state active" data-state="WA">WA</button>
       <button class="state" data-state="SA">SA</button>
       <button class="state" data-state="VIC">VIC</button>
       <button class="state" data-state="NT">NT</button>
@@ -29,22 +32,19 @@
   </aside>
 
   <main>
-
     <div class="chart chart1"></div>
     <br>
-    <div class="chart chart2"></div>
+    <div class="chart2 chart2"></div>
     <br>
     <div class="chart chart3"></div>
-    
   </main>
   <!-- CSS -->
   <link rel="stylesheet" type="text/css" href="static/css/style.css">
-  <!-- Chart.JS Library -->>
+  <!-- Chart.JS Library -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- D3 JavaScript -->
   <script src="https://d3js.org/d3.v5.min.js"></script>
   <script src="https://d3js.org/d3-queue.v3.min.js"></script>
-
   <!-- JavaScript -->
   <script type="text/javascript" src="static/js/logic.js"></script>
 </body>
