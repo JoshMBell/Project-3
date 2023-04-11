@@ -372,123 +372,120 @@ function filterDates() {
         const stateName = selectedState;
         
         // determine which expenditure array to use based on active buttons (combination of commodity and State)
-        let diffArray;
+        let comparrisonArray;
         switch (stateName) {
             case 'WA':
             switch (commodityName) {
                 case 'Fe':
-                diffArray = WA_Fe_exp;
+                comparrisonArray = WA_Fe_exp;
                 break;
                 case 'Au':
-                diffArray = WA_Au_exp;
+                comparrisonArray = WA_Au_exp;
                 break;
                 case 'Cu':
-                diffArray = WA_Cu_exp;
+                comparrisonArray = WA_Cu_exp;
                 break;
             }
             break;
             case 'SA':
             switch (commodityName) {
                 case 'Fe':
-                diffArray = SA_Fe_exp;
+                comparrisonArray = SA_Fe_exp;
                 break;
                 case 'Au':
-                diffArray= SA_Au_exp;
+                comparrisonArray= SA_Au_exp;
                 break;
                 case 'Cu':
-                diffArray = SA_Cu_exp;
+                comparrisonArray = SA_Cu_exp;
                 break;
             }
             break;
             case 'VIC':
             switch (commodityName) {
                 case 'Fe':
-                diffArray = VIC_Fe_exp;
+                comparrisonArray = VIC_Fe_exp;
                 break;
                 case 'Au':
-                diffArray = VIC_Au_exp;
+                comparrisonArray = VIC_Au_exp;
                 break;
                 case 'Cu':
-                diffArray = VIC_Cu_exp;
+                comparrisonArray = VIC_Cu_exp;
                 break;
             }
             break;
             case 'NT':
             switch (commodityName) {
                 case 'Fe':
-                diffArray = NT_Fe_exp;
+                comparrisonArray = NT_Fe_exp;
                 break;
                 case 'Au':
-                diffArray = NT_Au_exp;
+                comparrisonArray = NT_Au_exp;
                 break;
                 case 'Cu':
-                diffArray = NT_Cu_exp;
+                comparrisonArray = NT_Cu_exp;
                 break;
             }
             break;
             case 'QLD':
             switch (commodityName) {
                 case 'Fe':
-                diffArray = QLD_Fe_exp;
+                comparrisonArray = QLD_Fe_exp;
                 break;
                 case 'Au':
-                diffArray = QLD_Au_exp;
+                comparrisonArray = QLD_Au_exp;
                 break;
                 case 'Cu':
-                diffArray = QLD_Cu_exp;
+                comparrisonArray = QLD_Cu_exp;
                 break;
             }
             break;
             case 'NSW':
             switch (commodityName) {
                 case 'Fe':
-                diffArray= NSW_Fe_exp;
+                comparrisonArray= NSW_Fe_exp;
                 break;
                 case 'Au':
-                diffArray = NSW_Au_exp;
+                comparrisonArray = NSW_Au_exp;
                 break;
                 case 'Cu':
-                diffArray = NSW_Cu_exp;
+                comparrisonArray = NSW_Cu_exp;
                 break;
             }
             break;
         }
-        createNormalisedChart(diffArray);
+        createNormalisedChart(comparrisonArray);
     }
 
-    function createNormalisedChart(diffArray){
+    function createNormalisedChart(comparrisonArray){
         const chartDiv2 = document.querySelector('.chart2');
         // format data for plot
         // filter out objects with null values
-        const filteredData = diffArray.filter(obj => obj.value !== null && obj.commodity !== null);
-        const filteredDates = filteredData.map(obj => obj.date);
-        
+        const filteredData = comparrisonArray.filter(obj => obj.value !== null && obj.commodity !== null);
+      
         // extract the value and commodity data
         const xData = filteredData.map(data => data.value);
         const yData = filteredData.map(data => data.commodity);
-        
+      
         // get moving averages of data Arrays
         const xDataMA = exponentialMovingAverage(xData);
         const yDataMA = exponentialMovingAverage(yData);
-
+      
         // calculate the mean and standard deviation of the data
         const xMean = xDataMA.reduce((a, b) => a + b) / xDataMA.length;
         const yMean = yDataMA.reduce((a, b) => a + b) / yDataMA.length;
-    
+      
         const xStdDev = Math.sqrt(xDataMA.reduce((sq, n) => sq + Math.pow(n - xMean, 2), 0) / (xDataMA.length - 1));
         const yStdDev = Math.sqrt(yDataMA.reduce((sq, n) => sq + Math.pow(n - yMean, 2), 0) / (yDataMA.length - 1));
-    
+      
         // normalize the data 
         const normalizedXData = xDataMA.map(x => x / xStdDev).map(x => x === 0 ? null : x);
         const normalizedYData = yDataMA.map(y => y / yStdDev).map(y => y === 0 ? null : y);
-    
+      
         // push normalized data to a new variable in the same object
-        diffArray.normalizedExpenditure = normalizedXData;
-        diffArray.normalizedCommodity = normalizedYData;
-    
-        // calculate normalized difference
-        let normalizedDifference = normalizedXData.map((x, i) => x - normalizedYData[i]);
-    
+        comparrisonArray.normalizedExpenditure = normalizedXData;
+        comparrisonArray.normalizedCommodity = normalizedYData;
+      
+        // Remove previous plot and corr coeff data
         chartDiv2.querySelectorAll('canvas').forEach(canvas => {
             if (canvas.closest('.chart2') === chartDiv2) {
                 const chart = Chart.instances[canvas.id];
@@ -498,48 +495,81 @@ function filterDates() {
                 canvas.remove();
             }  
         });
-    
-        // create new canvas elements for chart 2
+        
+        chartDiv2.querySelectorAll('p').forEach(canvas => {
+            if (canvas.closest('.chart2') === chartDiv2) {
+                const chart = Chart.instances[canvas.id];
+                if (chart) {
+                    chart.destroy();
+                }
+                canvas.remove();
+            }  
+        });
+        
+        // calculate correlation coefficient
+        function correlationCoefficient(x, y) {
+            const n = x.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumXSq = 0, sumYSq = 0;
+          
+            for (let i = 0; i < n; i++) {
+              sumX += x[i];
+              sumY += y[i];
+              sumXY += x[i] * y[i];
+              sumXSq += x[i] * x[i];
+              sumYSq += y[i] * y[i];
+            }
+          
+            const numerator = (n * sumXY) - (sumX * sumY);
+            const denominator = Math.sqrt((n * sumXSq - sumX * sumX) * (n * sumYSq - sumY * sumY));
+            
+            return numerator / denominator;
+          }
+
+        const correlation = correlationCoefficient(normalizedXData, normalizedYData);
+        // create new div element for displaying correlation coefficient
+        const correlationElem = document.createElement('p');
+        correlationElem.textContent = `Correlation coefficient: ${correlation.toFixed(2)}`;
+         // create new canvas elements for chart 2
         const valueCanvas2 = document.createElement('canvas');
         valueCanvas2.width = 800;
         valueCanvas2.height = 400;
         chartDiv2.appendChild(valueCanvas2);
-    
+
+        chartDiv2.appendChild(correlationElem);
+        correlationElem.classList.add(`correlation-coefficient}`); // add class for easier removal later
+
         // data for chart 2
         const valueCtx2 = valueCanvas2.getContext('2d');
         const data2 = {
-            labels: filteredDates,
             datasets: [{
-                label: 'Normalised Difference (Expenditure (4MA) - Commodity price)',
-                data: normalizedDifference,
-                yAxisID: 'value_y',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                fill: {
-                    target: 'origin',
-                    above: 'rgb(0, 255, 0, 0.2)',
-                    below: 'rgb(255, 0, 0, 0.2)'
-                },
-                borderWidth: 2,
-                pointRadius: 0,
+                label: 'Normalized 4 point EMA: Expenditure vs Commodity Price',
+                data: normalizedYData.map((value, index) => {
+                    return {
+                        x: normalizedXData[index],
+                        y: value
+                    }
+                }),
+                backgroundColor: 'rgba(255, 99, 132, 1)'
             }]
         };
-    
-        // configure for chart 2
+      
         const config2 = {
-            type: 'line',
+            type: 'scatter',
             data: data2,
             options: {
                 scales: {
-                    value_y: {
-                        beginAtZero: true,
+                    x: {
+                        type: 'linear',
+                        position: 'bottom'
+                    },
+                    y: {
                         type: 'linear',
                         position: 'left'
                     }
                 }
             }
-        }
-        // create chart 2
+        };
+ 
         const chart2 = new Chart(valueCtx2, config2);
     }
 
@@ -714,11 +744,19 @@ function filterDates() {
                         beginAtZero: true,
                         type: 'linear',
                         position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Expenditure (AUD mil) per quarter'
+                        }
                     },
                     commodity_y: {
                         beginAtZero: true,
                         type: 'linear',
-                        position: 'right' 
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: `Commodity price ${commodityUnits}`
+                        }
                     },
                     value_4MA: {
                         beginAtZero: true,
@@ -729,7 +767,7 @@ function filterDates() {
                 }
             }
         }
-        
+
         // create chart 3
         const chart3 = new Chart(valueCtx3, config3);
     } 
