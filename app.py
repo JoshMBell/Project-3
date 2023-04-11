@@ -1,9 +1,6 @@
-import numpy as np
-import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
-import datetime
 from flask import Flask, jsonify
 from flask_cors import CORS
 
@@ -27,17 +24,6 @@ def commodity_prices():
         for row in rows:
             data.append(dict(zip(headers, row)))
         return jsonify(data)
-
-# @app.route('/expendature')
-# def expendature_by_commodity():
-#     with engine.connect() as conn:
-#         result = conn.execute('SELECT * From expendature_by_commodity')
-#         headers = result.keys()
-#         rows = result.fetchall()
-#         data = []
-#         for row in rows:
-#             data.append(dict(zip(headers, row)))
-#         return jsonify(data)
 
 if __name__ == '__main__':
     app.run(debug=True)
